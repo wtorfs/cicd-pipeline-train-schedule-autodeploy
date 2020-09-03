@@ -3,6 +3,7 @@ pipeline {
     environment {
         //be sure to replace "willbla" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "wtorfs/train-schedule"
+        CANARY_REPLICAS = 0
     }
     stages {
         stage('Build') {
@@ -77,6 +78,7 @@ pipeline {
             }
             steps {
                 milestone(1)
+            
                 kubernetesDeploy(
                     kubeconfigId: 'kubeconfig',
                     configs: 'train-schedule-kube.yml',
@@ -87,7 +89,7 @@ pipeline {
     }
     post {
         cleanup {
-            kubernetesDeploy (
+            kubernetesDeploy(
                 kubeconfigId: 'kubeconfig',
                 configs: 'train-schedule-kube-canary.yml',
                 enableConfigSubstitution: true
